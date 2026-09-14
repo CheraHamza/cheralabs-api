@@ -18,18 +18,22 @@ enum UserRole {
 }
 
 model User {
-  id       String   @id @default(cuid())
-  email    String   @unique
-  password String
-  name     String?
-  role     UserRole @default(READER)
+  id     String   @id @default(cuid())
+  email  String   @unique
+  name   String?
+  avatar String?
+  role   UserRole @default(READER)
+
+  provider   String // e.g., "google", "github"
+  providerId String // Unique ID from the OAuth provider
 
   posts    Post[]
   comments Comment[]
-  likes    Like[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([provider, providerId])
 }
 
 model Category {
@@ -46,7 +50,7 @@ model Post {
   id        String  @id @default(cuid())
   title     String
   slug      String  @unique
-  content   String?
+  content   String
   published Boolean @default(false)
 
   author   User   @relation(fields: [authorId], references: [id])
@@ -81,7 +85,7 @@ model Comment {
   author   User   @relation(fields: [authorId], references: [id])
   authorId String
 
-  post   Post   @relation(fields: [postId], references: [id])
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId String
 
   createdAt DateTime @default(now())
@@ -89,13 +93,13 @@ model Comment {
 }
 
 model Like {
-  id String @id @default(cuid())
+  id         String @id @default(cuid())
+  identifier String // Hashed IP + Fingerprint string
 
-  author   User   @relation(fields: [authorId], references: [id])
-  authorId String
-
-  post   Post   @relation(fields: [postId], references: [id])
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId String
 
   createdAt DateTime @default(now())
+
+  @@unique([identifier, postId])
 }
