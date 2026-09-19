@@ -35,6 +35,8 @@ const envSchema = z.object({
 	GITHUB_CLIENT_SECRET: z
 		.string({ error: "GITHUB_CLIENT_SECRET is required" })
 		.min(1),
+
+	CLIENT_URL: z.url().default("http://localhost:5173"),
 });
 
 const _env = envSchema.safeParse(process.env);
