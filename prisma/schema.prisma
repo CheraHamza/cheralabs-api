@@ -24,16 +24,14 @@ model User {
   avatar String?
   role   UserRole @default(READER)
 
-  provider   String // e.g., "google", "github"
-  providerId String // Unique ID from the OAuth provider
+  googleId String? @unique
+  githubId String? @unique
 
   posts    Post[]
   comments Comment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@unique([provider, providerId])
 }
 
 model Category {
