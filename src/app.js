@@ -5,6 +5,7 @@ import cors from "cors";
 import { env } from "./config/env.js";
 import apiRoutes from "./routes/index.js";
 import passport from "./config/passport.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 
@@ -20,6 +21,8 @@ app.use(
 app.use(passport.initialize());
 
 app.use("/api", apiRoutes);
+
+app.use(errorHandler);
 
 app.listen(env.PORT, () => {
 	console.log(
