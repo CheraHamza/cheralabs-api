@@ -1,5 +1,6 @@
 import { signToken } from "../utils/jwt.js";
 import { env } from "../config/env.js";
+import { AppError } from "../utils/AppError.js";
 
 const ALLOWED_ORIGINS = ["http://localhost:5173"];
 
@@ -28,9 +29,7 @@ export const getCurrentUser = (req, res) => {
 };
 
 export const handleAuthFailure = (req, res) => {
-	return res
-		.status(401)
-		.json({ message: "Authentication failed. Please try again." });
+	throw new AppError("Authentication failed. Please try again.", 401);
 };
 
 export const logoutUser = (req, res) => {

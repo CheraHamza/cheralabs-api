@@ -1,4 +1,5 @@
 import { verifyToken } from "../utils/jwt.js";
+import { AppError } from "../utils/AppError.js";
 
 export const requireAuth = (req, res, next) => {
 	const token =
@@ -8,9 +9,7 @@ export const requireAuth = (req, res, next) => {
 			: null);
 
 	if (!token) {
-		return res
-			.status(401)
-			.json({ message: "Unauthorized: Authentication required" });
+		throw new AppError("Unauthorized: Missing token", 401);
 	}
 
 	try {
@@ -18,23 +17,17 @@ export const requireAuth = (req, res, next) => {
 		req.user = decoded;
 		next();
 	} catch (err) {
-		return res
-			.status(401)
-			.json({ message: "Unauthorized: Invalid or expired token" });
+		throw new AppError("Unauthorized: Invalid or expired token", 401);
 	}
 };
 
 export const requireAdmin = (req, res, next) => {
 	if (!req.user) {
-		return res
-			.status(401)
-			.json({ message: "Unauthorized: Authentication required" });
+		throw new AppError("Unauthorized: Authentication required", 401);
 	}
 
 	if (req.user.role !== "ADMIN") {
-		return res
-			.status(403)
-			.json({ message: "Forbidden: Admin access required" });
+		throw new AppError("Forbidden: Admin access required", 403);
 	}
 
 	next();
