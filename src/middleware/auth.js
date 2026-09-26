@@ -9,25 +9,25 @@ export const requireAuth = (req, res, next) => {
 			: null);
 
 	if (!token) {
-		throw new AppError("Unauthorized: Missing token", 401);
+		return next(new AppError("Unauthorized: Missing token", 401));
 	}
 
 	try {
 		const decoded = verifyToken(token);
 		req.user = decoded;
-		next();
+		return next();
 	} catch (err) {
-		throw new AppError("Unauthorized: Invalid or expired token", 401);
+		return next(new AppError("Unauthorized: Invalid or expired token", 401));
 	}
 };
 
 export const requireAdmin = (req, res, next) => {
 	if (!req.user) {
-		throw new AppError("Unauthorized: Authentication required", 401);
+		return next(new AppError("Unauthorized: Authentication required", 401));
 	}
 
 	if (req.user.role !== "ADMIN") {
-		throw new AppError("Forbidden: Admin access required", 403);
+		return next(new AppError("Forbidden: Admin access required", 403));
 	}
 
 	next();

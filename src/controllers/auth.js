@@ -4,8 +4,20 @@ import { AppError } from "../utils/AppError.js";
 
 const ALLOWED_ORIGINS = ["http://localhost:5173"];
 
+const COOKIE_OPTIONS = {
+	httpOnly: true,
+	secure: env.NODE_ENV === "production",
+	sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+	maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+};
+
 export const handleOAuthCallback = (req, res) => {
 	const user = req.user;
+
+	if (!user) {
+		return next(new AppError("Authentication failed: No user found", 401));
+	}
+
 	const token = signToken({ id: user.id, role: user.role });
 
 	const targetOrigin = req.query.state;
@@ -14,12 +26,7 @@ export const handleOAuthCallback = (req, res) => {
 		? targetOrigin
 		: env.CLIENT_URL;
 
-	res.cookie("token", token, {
-		httpOnly: true,
-		secure: env.NODE_ENV === "production",
-		sameSite: env.NODE_ENV === "production" ? "none" : "lax",
-		maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-	});
+	res.cookie("token", token, COOKIE_OPTIONS);
 
 	return res.redirect(redirectUrl);
 };
@@ -28,16 +35,12 @@ export const getCurrentUser = (req, res) => {
 	return res.json({ user: req.user });
 };
 
-export const handleAuthFailure = (req, res) => {
-	throw new AppError("Authentication failed. Please try again.", 401);
+export const handleAuthFailure = (req, res, next) => {
+	return next(new AppError("Authentication failed. Please try again.", 401));
 };
 
 export const logoutUser = (req, res) => {
-	res.clearCookie("token", {
-		httpOnly: true,
-		secure: env.NODE_ENV === "production",
-		sameSite: env.NODE_ENV === "production" ? "none" : "lax",
-	});
+	res.clearCookie("token", COOKIE_OPTIONS);
 
 	return res.json({ message: "Logged out successfully" });
 };
