@@ -1,5 +1,5 @@
 import { ZodError } from "zod";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../../generated/prisma/client.js";
 import { env } from "../config/env.js";
 import { AppError } from "../utils/AppError.js";
 
@@ -84,6 +84,10 @@ export const errorHandler = (err, req, res, next) => {
 
 	return res.status(statusCode).json({
 		success: false,
-		message: env.NODE_ENV === 'production' ? "An unexpected error occured on the server." : err.message, ...(env.NODE_ENV === 'development' && { stack: err.stack })
+		message:
+			env.NODE_ENV === "production"
+				? "An unexpected error occured on the server."
+				: err.message,
+		...(env.NODE_ENV === "development" && { stack: err.stack }),
 	});
 };
