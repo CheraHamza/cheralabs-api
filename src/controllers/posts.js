@@ -139,7 +139,7 @@ export const getPostByIdAdmin = async (req, res, next) => {
 
 export const createPost = async (req, res, next) => {
 	try {
-		const { title, content, published } = req.body;
+		const { title, content, published, categoryId } = req.body;
 
 		let slug = slugify(title);
 
@@ -156,6 +156,12 @@ export const createPost = async (req, res, next) => {
 				content,
 				published: published ?? false,
 				authorId: req.user.id,
+				...(categoryId && { categoryId }),
+			},
+			include: {
+				category: {
+					select: { id: true, name: true, slug: true },
+				},
 			},
 		});
 
@@ -172,7 +178,7 @@ export const createPost = async (req, res, next) => {
 export const updatePost = async (req, res, next) => {
 	try {
 		const { id } = req.params;
-		const { title, content, published } = req.body;
+		const { title, content, published, categoryId } = req.body;
 
 		let slug;
 
@@ -192,6 +198,12 @@ export const updatePost = async (req, res, next) => {
 				...(title && { title, slug }),
 				...(content && { content }),
 				...(published !== undefined && { published }),
+				...(categoryId !== undefined && { categoryId }),
+			},
+			include: {
+				category: {
+					select: { id: true, name: true, slug: true },
+				},
 			},
 		});
 

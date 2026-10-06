@@ -12,6 +12,7 @@ export const createPostSchema = z.object({
 			.trim()
 			.min(10, "Content must be at least 10 characters"),
 		published: z.boolean().optional().default(false),
+		categoryId: z.string().optional(),
 	}),
 });
 
@@ -32,6 +33,7 @@ export const updatePostSchema = z.object({
 			.min(10, "Content must be at least 10 characters")
 			.optional(),
 		published: z.boolean().optional(),
+		categoryId: z.string().nullable().optional(),
 	}),
 });
 
