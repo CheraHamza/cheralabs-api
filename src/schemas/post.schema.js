@@ -13,6 +13,7 @@ export const createPostSchema = z.object({
 			.min(10, "Content must be at least 10 characters"),
 		published: z.boolean().optional().default(false),
 		categoryId: z.string().optional(),
+		tagIds: z.array(z.string().min(1, "Tag ID is required")).optional(),
 	}),
 });
 
@@ -34,6 +35,10 @@ export const updatePostSchema = z.object({
 			.optional(),
 		published: z.boolean().optional(),
 		categoryId: z.string().nullable().optional(),
+		tagIds: z
+			.array(z.string().min(1, "Tag ID is required"))
+			.nullable()
+			.optional(),
 	}),
 });
 

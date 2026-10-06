@@ -139,7 +139,7 @@ export const getPostByIdAdmin = async (req, res, next) => {
 
 export const createPost = async (req, res, next) => {
 	try {
-		const { title, content, published, categoryId } = req.body;
+		const { title, content, published, categoryId, tagIds } = req.body;
 
 		let slug = slugify(title);
 
@@ -157,9 +157,18 @@ export const createPost = async (req, res, next) => {
 				published: published ?? false,
 				authorId: req.user.id,
 				...(categoryId && { categoryId }),
+				...(tagIds &&
+					tagIds.length > 0 && {
+						tags: {
+							connect: tagIds.map((id) => ({ id })),
+						},
+					}),
 			},
 			include: {
 				category: {
+					select: { id: true, name: true, slug: true },
+				},
+				tags: {
 					select: { id: true, name: true, slug: true },
 				},
 			},
@@ -178,7 +187,7 @@ export const createPost = async (req, res, next) => {
 export const updatePost = async (req, res, next) => {
 	try {
 		const { id } = req.params;
-		const { title, content, published, categoryId } = req.body;
+		const { title, content, published, categoryId, tagIds } = req.body;
 
 		let slug;
 
@@ -199,9 +208,17 @@ export const updatePost = async (req, res, next) => {
 				...(content && { content }),
 				...(published !== undefined && { published }),
 				...(categoryId !== undefined && { categoryId }),
+				...(tagIds !== undefined && {
+					tags: {
+						set: tagIds.map((id) => ({ id })),
+					},
+				}),
 			},
 			include: {
 				category: {
+					select: { id: true, name: true, slug: true },
+				},
+				tags: {
 					select: { id: true, name: true, slug: true },
 				},
 			},
