@@ -25,14 +25,27 @@ const router = express.Router();
 
 // Public routes
 router.get("/", getPublishedPosts);
-router.get("/:slug", validate(getPostBySlugSchema), getPostBySlug);
 
-router.use(requireAuth, requireAdmin);
 // Admin routes
-router.get("/admin", getAllPostsAdmin); // Including unpublished posts
-router.get("/:id", getPostByIdAdmin);
-router.post("/", validate(createPostSchema), createPost);
-router.patch("/:id", validate(updatePostSchema), updatePost);
-router.delete("/:id", deletePost);
+router.get("/admin/all", requireAuth, requireAdmin, getAllPostsAdmin); // Including unpublished posts
+router.get("/admin/:id", requireAuth, requireAdmin, getPostByIdAdmin);
+router.post(
+	"/",
+	requireAuth,
+	requireAdmin,
+	validate(createPostSchema),
+	createPost,
+);
+router.patch(
+	"/:id",
+	requireAuth,
+	requireAdmin,
+	validate(updatePostSchema),
+	updatePost,
+);
+router.delete("/:id", requireAuth, requireAdmin, deletePost);
+
+// Public slug route
+router.get("/:slug", validate(getPostBySlugSchema), getPostBySlug);
 
 export default router;
