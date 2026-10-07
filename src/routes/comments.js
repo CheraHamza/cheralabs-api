@@ -1,16 +1,18 @@
 import express from "express";
+import { getPostComments, createComment } from "../controllers/comments.js";
+import { requireAuth } from "../middleware/auth.js";
+import { validate } from "../middleware/validate.js";
+import {
+	createCommentSchema,
+	getPostCommentsSchema,
+} from "../schemas/comments.schema.js";
 
 // allows capturing params from the parent route
 const router = express.Router({ mergeParams: true });
 
 // Mounted under /api/posts/:slug/comments in posts.js
-router.get("/", getPostComments);
+router.get("/", validate(getPostCommentsSchema), getPostComments);
 
-router.use(requireAuth);
-
-router.post("/", postComment);
-// Mounted under /api/comments for direct access
-router.patch("/:id", updateComment);
-router.delete("/:id", deleteComment);
+router.post("/", requireAuth, validate(createCommentSchema), createComment);
 
 export default router;

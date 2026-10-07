@@ -1,5 +1,5 @@
 import express from "express";
-// import commentsRouter from "./comments.js";
+import postsCommentsRouter from "./comments.js";
 // import likesRouter from "./likes.js";
 import { requireAuth, requireAdmin } from "../middleware/auth.js";
 import { validate } from "../middleware/validate.js";
@@ -20,7 +20,7 @@ import {
 
 const router = express.Router();
 
-// router.use("/:slug/comments", commentsRouter);
+router.use("/:slug/comments", postsCommentsRouter);
 // router.use("/:slug/likes", likesRouter);
 
 // Public routes
