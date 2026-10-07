@@ -4,7 +4,7 @@ import { AppError } from "../utils/AppError.js";
 
 const ALLOWED_ORIGINS = ["http://localhost:5173"];
 
-const COOKIE_OPTIONS = {
+export const COOKIE_OPTIONS = {
 	httpOnly: true,
 	secure: env.NODE_ENV === "production",
 	sameSite: env.NODE_ENV === "production" ? "none" : "lax",
