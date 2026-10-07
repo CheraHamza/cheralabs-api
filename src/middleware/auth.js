@@ -30,5 +30,27 @@ export const requireAdmin = (req, res, next) => {
 		return next(new AppError("Forbidden: Admin access required", 403));
 	}
 
-	next();
+	return next();
+};
+
+export const optionalAuth = (req, res, next) => {
+	const token =
+		req.cookies?.token ||
+		(req.headers.authorization?.startsWith("Bearer ")
+			? req.header.authorization.split(" ")[1]
+			: null);
+
+	if (!token) {
+		req.user = null;
+		return next();
+	}
+
+	try {
+		const decoded = verifyToken(token);
+		req.user = decoded;
+	} catch (error) {
+		req.user = null;
+	}
+
+	return next();
 };
